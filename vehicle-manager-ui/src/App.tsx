@@ -1,50 +1,26 @@
 import { useState } from 'react'
-import { VehicleList, type Vehicle } from './components/VehicleList'
+import { Vehicles } from './components/Vehicles'
 import './App.css'
+import { BrowserRouter, createBrowserRouter, createRoutesFromElements, Route, Router, RouterProvider, Routes, useSearchParams } from 'react-router-dom'
+
+// const router = createBrowserRouter(
+//   createRoutesFromElements(
+//     <Route path="/" element={<VehicleList />} />
+//   )
+// )
 
 function App() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
-    {
-      id: 'vehicle-101',
-      label: 'Swiftly 101',
-      type: 'bus',
-      transitAgencyId: 'agency-nyc',
-      capacity: 42,
-    },
-    {
-      id: 'vehicle-202',
-      label: 'Swiftly 202',
-      type: 'streetcar',
-      transitAgencyId: 'agency-bos',
-      capacity: 18,
-    },
-  ])
-
-  const addVehicle = async (vehicle: Vehicle) => {
-    setVehicles((currentVehicles) => [...currentVehicles, vehicle])
-  }
-
-  const saveVehicle = async (vehicle: Vehicle) => {
-    await new Promise((resolve) => setTimeout(resolve, 700))
-    setVehicles((currentVehicles) => currentVehicles.map((currentVehicle) => (
-      currentVehicle.id === vehicle.id ? vehicle : currentVehicle
-    )))
-  }
-
-  const deleteVehicle = async (vehicle: Vehicle) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    setVehicles((currentVehicles) => currentVehicles.filter(({ id }) => id !== vehicle.id))
-  }
-
+  
   return (
-    <main className="app-shell">
-      <VehicleList
-        vehicles={vehicles}
-        onAdd={addVehicle}
-        onSave={saveVehicle}
-        onDelete={deleteVehicle}
-      />
-    </main>
+    <BrowserRouter>
+      <main className="app-shell">
+        {/* <RouterProvider router={router} /> */}
+        <Routes>
+          <Route path="/" element={<Vehicles/>}/>
+          <Route path="*" element={<div>Not Found</div>} />
+        </Routes>
+      </main>
+    </BrowserRouter>
   )
 }
 
