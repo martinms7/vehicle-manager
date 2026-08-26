@@ -1,0 +1,124 @@
+.vehicle-list {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  color: #1f2933;
+}
+
+.vehicle-list__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 0 16px;
+  border-bottom: 2px solid #1f2933;
+}
+
+.vehicle-list__title-row h1 {
+  margin: 0;
+  color: #1f2933;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0;
+}
+
+.vehicle-list__delete {
+  border: 1px solid #c2413b;
+  border-radius: 4px;
+  padding: 8px 14px;
+  color: #9f2f2a;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vehicle-list__delete:hover:not(:disabled),
+.vehicle-list__delete:focus-visible:not(:disabled) {
+  color: #fff;
+  background: #c2413b;
+}
+
+.vehicle-list__delete:disabled {
+  border-color: #cbd2d9;
+  color: #9aa5b1;
+  cursor: not-allowed;
+}
+
+.vehicle-list__table-wrap {
+  overflow-x: auto;
+}
+
+.vehicle-list table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.vehicle-list th,
+.vehicle-list td {
+  min-width: 150px;
+  padding: 12px 10px;
+  border-bottom: 1px solid #d9e2ec;
+}
+
+.vehicle-list th {
+  color: #52606d;
+  background: #f0f4f8;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: none;
+}
+
+.vehicle-list tbody tr {
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.vehicle-list tbody tr:hover,
+.vehicle-list tbody tr.is-selected {
+  background: #e8f1f5;
+}
+
+.vehicle-list td input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 8px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+
+.vehicle-list td input:enabled {
+  border-color: #7b8794;
+  background: #fff;
+}
+
+.vehicle-list td input:focus-visible {
+  outline: 2px solid #187b8f;
+  outline-offset: 1px;
+}
+
+.vehicle-list td input:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.vehicle-list__status {
+  margin: 12px 0 0;
+  color: #187b8f;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .vehicle-list__title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .vehicle-list__delete {
+    align-self: flex-end;
+  }
+}
