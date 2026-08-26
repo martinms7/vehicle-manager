@@ -19,10 +19,10 @@ type VehicleListProps = {
 }
 
 const fields: { key: EditableField; label: string; inputMode?: 'numeric' }[] = [
-  { key: 'label', label: 'label' },
-  { key: 'type', label: 'type' },
-  { key: 'transitAgencyId', label: 'transitAgencyId' },
-  { key: 'capacity', label: 'capacity', inputMode: 'numeric' },
+  { key: 'label', label: 'Name' },
+  { key: 'type', label: 'Vehicle Type' },
+  { key: 'transitAgencyId', label: 'Transit Agency Id' },
+  { key: 'capacity', label: 'Capacity', inputMode: 'numeric' },
 ]
 
 export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
@@ -39,10 +39,23 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
 
   const selectedVehicle = vehicles.find((vehicle) => vehicle.id === selectedId) ?? null
   const isBusy = isSaving || isDeleting
+  const hasChanges = (original: Vehicle, current: Vehicle) => (
+    original.label !== current.label
+    || original.type !== current.type
+    || original.transitAgencyId !== current.transitAgencyId
+    || original.capacity !== current.capacity
+  )
 
   const saveDraft = async () => {
     const currentDraft = draftRef.current
     if (!currentDraft || isBusy) return false
+
+    const originalVehicle = vehicles.find((vehicle) => vehicle.id === currentDraft.id)
+    if (!originalVehicle || !hasChanges(originalVehicle, currentDraft)) {
+      setDraft(null)
+      setSelectedId(null)
+      return false
+    }
 
     setIsSaving(true)
     try {
@@ -117,6 +130,7 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
         <table>
           <thead>
             <tr>
+              <th scope="col"><span className="sr-only">Select</span></th>
               {fields.map((field) => <th key={field.key} scope="col">{field.label}</th>)}
             </tr>
           </thead>
@@ -132,6 +146,17 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
                   onClick={() => selectRow(vehicle)}
                   aria-selected={isSelected}
                 >
+                  <td className="vehicle-list__selector-cell">
+                    <input
+                      type="radio"
+                      name="selected-vehicle"
+                      checked={isSelected}
+                      onChange={() => void selectRow(vehicle)}
+                      onClick={(event) => event.stopPropagation()}
+                      disabled={isBusy}
+                      aria-label={`Select ${vehicle.label}`}
+                    />
+                  </td>
                   {fields.map((field) => (
                     <td key={field.key}>
                       <input
@@ -139,7 +164,10 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
                         inputMode={field.inputMode}
                         value={rowVehicle[field.key]}
                         onChange={(event) => updateField(field.key, event)}
-                        onClick={(event) => event.stopPropagation()}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          void selectRow(vehicle)
+                        }}
                         disabled={!isSelected || isBusy}
                         aria-label={`${field.label} for ${vehicle.label}`}
                       />
