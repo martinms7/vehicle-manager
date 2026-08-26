@@ -7,18 +7,22 @@ function App() {
     {
       id: 'vehicle-101',
       label: 'Swiftly 101',
-      type: 'Bus',
+      type: 'bus',
       transitAgencyId: 'agency-nyc',
       capacity: 42,
     },
     {
       id: 'vehicle-202',
       label: 'Swiftly 202',
-      type: 'Shuttle',
+      type: 'streetcar',
       transitAgencyId: 'agency-bos',
       capacity: 18,
     },
   ])
+
+  const addVehicle = async (vehicle: Vehicle) => {
+    setVehicles((currentVehicles) => [...currentVehicles, vehicle])
+  }
 
   const saveVehicle = async (vehicle: Vehicle) => {
     await new Promise((resolve) => setTimeout(resolve, 700))
@@ -36,6 +40,7 @@ function App() {
     <main className="app-shell">
       <VehicleList
         vehicles={vehicles}
+        onAdd={addVehicle}
         onSave={saveVehicle}
         onDelete={deleteVehicle}
       />

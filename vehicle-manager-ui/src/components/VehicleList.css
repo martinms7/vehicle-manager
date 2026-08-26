@@ -32,6 +32,12 @@
   letter-spacing: 0;
 }
 
+.vehicle-list__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.vehicle-list__add,
 .vehicle-list__delete {
   border: 1px solid #c2413b;
   border-radius: 4px;
@@ -41,6 +47,17 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.vehicle-list__add {
+  border-color: #187b8f;
+  color: #126475;
+}
+
+.vehicle-list__add:hover:not(:disabled),
+.vehicle-list__add:focus-visible:not(:disabled) {
+  color: #fff;
+  background: #187b8f;
 }
 
 .vehicle-list__delete:hover:not(:disabled),
@@ -121,9 +138,43 @@
   font: inherit;
 }
 
+.vehicle-list td select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 8px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+
+.vehicle-list td select:enabled {
+  border-color: #7b8794;
+  background: #fff;
+}
+
+.vehicle-list td select:focus-visible {
+  outline: 2px solid #187b8f;
+  outline-offset: 1px;
+}
+
+.vehicle-list td select:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .vehicle-list td input:enabled {
   border-color: #7b8794;
   background: #fff;
+}
+
+.vehicle-list td.vehicle-list__selector-cell input {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  padding: 0;
+  background: transparent;
 }
 
 .vehicle-list td input:focus-visible {
@@ -150,7 +201,7 @@
     gap: 12px;
   }
 
-  .vehicle-list__delete {
+  .vehicle-list__actions {
     align-self: flex-end;
   }
 }

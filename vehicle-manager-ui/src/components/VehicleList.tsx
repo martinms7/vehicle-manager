@@ -14,9 +14,19 @@ type EditableField = Exclude<keyof Vehicle, 'id'>
 
 type VehicleListProps = {
   vehicles: Vehicle[]
+  onAdd: (vehicle: Vehicle) => void | Promise<void>
   onSave: (vehicle: Vehicle) => void | Promise<void>
   onDelete: (vehicle: Vehicle) => void | Promise<void>
 }
+
+const capacityByType: Record<string, number> = {
+  bus: 50,
+  train: 700,
+  streetcar: 150,
+  ferry: 500,
+}
+
+const vehicleTypes = Object.keys(capacityByType)
 
 const fields: { key: EditableField; label: string; inputMode?: 'numeric' }[] = [
   { key: 'label', label: 'Name' },
@@ -25,7 +35,7 @@ const fields: { key: EditableField; label: string; inputMode?: 'numeric' }[] = [
   { key: 'capacity', label: 'Capacity', inputMode: 'numeric' },
 ]
 
-export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
+export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Vehicle | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -107,6 +117,26 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
     }
   }
 
+  const addVehicle = async () => {
+    if (isBusy) return
+
+    if (selectedId !== null) {
+      await saveDraft()
+    }
+
+    const newVehicle: Vehicle = {
+      id: `vehicle-${Date.now()}`,
+      label: 'New Vehicle',
+      type: 'bus',
+      transitAgencyId: '',
+      capacity: capacityByType.bus,
+    }
+
+    await onAdd(newVehicle)
+    setSelectedId(newVehicle.id)
+    setDraft({ ...newVehicle })
+  }
+
   return (
     <div
       ref={listRef}
@@ -115,15 +145,25 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
     >
       <div className="vehicle-list__title-row">
         <h1>Your Vehicles</h1>
-        <button
-          type="button"
-          className="vehicle-list__delete"
-          onClick={deleteSelected}
-          disabled={!selectedVehicle || isBusy}
-          aria-label={selectedVehicle ? `Delete ${selectedVehicle.label}` : 'Delete selected vehicle'}
-        >
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </button>
+        <div className="vehicle-list__actions">
+          <button
+            type="button"
+            className="vehicle-list__add"
+            onClick={() => void addVehicle()}
+            disabled={isBusy}
+          >
+            Add
+          </button>
+          <button
+            type="button"
+            className="vehicle-list__delete"
+            onClick={deleteSelected}
+            disabled={!selectedVehicle || isBusy}
+            aria-label={selectedVehicle ? `Delete ${selectedVehicle.label}` : 'Delete selected vehicle'}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
       </div>
 
       <div className="vehicle-list__table-wrap">
@@ -159,18 +199,41 @@ export function VehicleList({ vehicles, onSave, onDelete }: VehicleListProps) {
                   </td>
                   {fields.map((field) => (
                     <td key={field.key}>
-                      <input
-                        type={field.key === 'capacity' ? 'number' : 'text'}
-                        inputMode={field.inputMode}
-                        value={rowVehicle[field.key]}
-                        onChange={(event) => updateField(field.key, event)}
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          void selectRow(vehicle)
-                        }}
-                        disabled={!isSelected || isBusy}
-                        aria-label={`${field.label} for ${vehicle.label}`}
-                      />
+                      {field.key === 'type' ? (
+                        <select
+                          value={rowVehicle.type}
+                          onChange={(event) => {
+                            if (isSelected && !isBusy) {
+                              setDraft({
+                                ...rowVehicle,
+                                type: event.target.value,
+                                capacity: capacityByType[event.target.value],
+                              })
+                            }
+                          }}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            void selectRow(vehicle)
+                          }}
+                          disabled={!isSelected || isBusy}
+                          aria-label={`${field.label} for ${vehicle.label}`}
+                        >
+                          {vehicleTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.key === 'capacity' ? 'number' : 'text'}
+                          inputMode={field.inputMode}
+                          value={rowVehicle[field.key]}
+                          onChange={(event) => updateField(field.key, event)}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            void selectRow(vehicle)
+                          }}
+                          disabled={!isSelected || isBusy}
+                          aria-label={`${field.label} for ${vehicle.label}`}
+                        />
+                      )}
                     </td>
                   ))}
                 </tr>
