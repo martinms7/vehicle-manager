@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -47,7 +48,13 @@ describe('Vehicles', () => {
       }
       return {
         ok: true,
-        json: async () => loadedVehicles[0],
+        json: async () => [{
+          vehicleId: loadedVehicles[0].id,
+          name: loadedVehicles[0].label,
+          vehicleType: loadedVehicles[0].type,
+          agencyId: Number(loadedVehicles[0].transitAgencyId),
+          seatingCapacity: loadedVehicles[0].capacity,
+        }],
       } as Response
     })
   })
@@ -55,8 +62,8 @@ describe('Vehicles', () => {
   it('loads vehicles for the agency in the URL', async () => {
     renderVehicles()
 
-    expect(await screen.findByDisplayValue('NYC 2')).toBeInTheDocument()
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles/2')
+    expect(await screen.findByDisplayValue('NYC 2')).toBeTruthy()
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles?agencyId=2')
   })
 
   it('uses the API boundary for adding a vehicle', async () => {
@@ -66,7 +73,10 @@ describe('Vehicles', () => {
     await screen.findByDisplayValue('NYC 2')
     await user.click(screen.getByRole('button', { name: 'Add' }))
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/vehicles', expect.objectContaining({ method: 'POST' })))
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/vehicles',
+      expect.objectContaining({ method: 'POST' }),
+    ))
   })
 
   it('uses the API boundary for updating and deleting a vehicle', async () => {
@@ -80,13 +90,16 @@ describe('Vehicles', () => {
     await user.click(document.body)
 
     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
-      '/api/vehicles/vehicle-2',
+      'http://localhost:8080/api/v1/vehicles/vehicle-2',
       expect.objectContaining({ method: 'PUT' }),
     ))
 
     await user.click(screen.getByTestId('vehicle-row-vehicle-2'))
     await user.click(screen.getByRole('button', { name: /delete nyc 2/i }))
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/vehicles/vehicle-2', expect.objectContaining({ method: 'DELETE' })))
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/vehicles/vehicle-2',
+      expect.objectContaining({ method: 'DELETE' }),
+    ))
   })
 })

@@ -3,6 +3,7 @@ import {
   deleteVehicleById,
   getVehiclesById,
   updateVehicle,
+  mapVehicleToVehicleDto,
 } from '../hooks/api/useVehiclesApi'
 import type { Vehicle } from '../types/Vehicle'
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
@@ -33,7 +34,23 @@ describe('useVehiclesApi', () => {
       transitAgencyId: '2',
       capacity: 50,
     }])
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles/2')
+    expect(fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles?agencyId=2')
+  })
+
+  it('maps a Vehicle domain object to a VehicleDto', () => {
+    expect(mapVehicleToVehicleDto({
+      id: 'vehicle-1',
+      label: 'Route 1',
+      type: 'bus',
+      transitAgencyId: '2',
+      capacity: 50,
+    })).toEqual({
+      vehicleId: 'vehicle-1',
+      name: 'Route 1',
+      vehicleType: 'bus',
+      agencyId: 2,
+      seatingCapacity: 50,
+    })
   })
 
   it.each([
@@ -66,8 +83,21 @@ describe('useVehiclesApi', () => {
     await updateVehicle(vehicle)
     await deleteVehicleById(vehicle.id)
 
-    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/vehicles', expect.objectContaining({ method: 'POST' }))
-    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/vehicles/vehicle-1', expect.objectContaining({ method: 'PUT' }))
-    expect(fetchMock).toHaveBeenNthCalledWith(3, '/api/vehicles/vehicle-1', expect.objectContaining({ method: 'DELETE' }))
+    const expectedDto = {
+      vehicleId: 'vehicle-1',
+      name: 'Route 1',
+      vehicleType: 'bus',
+      agencyId: 2,
+      seatingCapacity: 50,
+    }
+    expect(fetchMock).toHaveBeenNthCalledWith(1, 'http://localhost:8080/api/v1/vehicles', expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify(expectedDto),
+    }))
+    expect(fetchMock).toHaveBeenNthCalledWith(2, 'http://localhost:8080/api/v1/vehicles/vehicle-1', expect.objectContaining({
+      method: 'PUT',
+      body: JSON.stringify(expectedDto),
+    }))
+    expect(fetchMock).toHaveBeenNthCalledWith(3, 'http://localhost:8080/api/v1/vehicles/vehicle-1', expect.objectContaining({ method: 'DELETE' }))
   })
 })
