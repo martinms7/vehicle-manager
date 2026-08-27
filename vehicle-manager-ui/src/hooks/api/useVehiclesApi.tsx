@@ -23,7 +23,7 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
   ],
 }
 
-    const mapVehicleDto = (vehicleDto: VehicleDto): Vehicle => ({
+    export const mapVehicleDto = (vehicleDto: VehicleDto): Vehicle => ({
       id: vehicleDto.vehicleId,
       label: vehicleDto.name,
       type: vehicleDto.vehicleType,
@@ -31,7 +31,15 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
       capacity: vehicleDto.seatingCapacity,
     });
 
-    const domainAddress: string = "http://localhost:8080/api/v1/vehicles";
+    export const vehicleToVehicleDto = (vehicle: Vehicle): VehicleDto => ({
+      vehicleId: vehicle.id,
+      name: vehicle.label,
+      vehicleType: vehicle.type,
+      agencyId: Number(vehicle.transitAgencyId),
+      seatingCapacity: vehicle.capacity,
+    });
+
+    const vehiclesEndpoint: string = "http://localhost:8080/api/v1/vehicles";
     
     const getMockVehicleDtos = async (agencyId: number): Promise<VehicleDto[]> => (
       mockVehicleDtos[agencyId] ?? []
@@ -49,7 +57,7 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
 
 export async function getVehiclesById (agencyId: number): Promise<Vehicle[]> {
       try {
-        const response = await fetch(`${domainAddress}/${agencyId}`)
+        const response = await fetch(`${vehiclesEndpoint}?agencyId=${agencyId}`)
         if (!response.ok) throw new Error(`Vehicle request failed: ${response.status}`)
         const vehicleDtos = await response.json() as VehicleDto[];
         const vehicles = agencyId ? vehicleDtos.map(mapVehicleDto) : [];
@@ -67,12 +75,12 @@ export async function getVehiclesById (agencyId: number): Promise<Vehicle[]> {
 
 export async function addVehicle(vehicle: Vehicle): Promise<Vehicle> {
   try {
-    const response = await fetch('/api/vehicles', {
+    const response = await fetch(`${vehiclesEndpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(vehicle),
+      body: JSON.stringify(vehicleToVehicleDto(vehicle)),
     });
     if (!response.ok) throw new Error(`Vehicle creation failed: ${response.status}`);
     return await response.json() as Vehicle;
@@ -84,12 +92,12 @@ export async function addVehicle(vehicle: Vehicle): Promise<Vehicle> {
 
 export async function updateVehicle(vehicle: Vehicle): Promise<Vehicle> {
   try {
-    const response = await fetch(`/api/vehicles/${vehicle.id}`, {
+    const response = await fetch(`${vehiclesEndpoint}/${vehicle.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(vehicle),
+      body: JSON.stringify(vehicleToVehicleDto(vehicle)),
     });
     if (!response.ok) throw new Error(`Vehicle update failed: ${response.status}`);
     return await response.json() as Vehicle;
@@ -101,7 +109,7 @@ export async function updateVehicle(vehicle: Vehicle): Promise<Vehicle> {
 
 export async function deleteVehicleById(vehicleId: string): Promise<void> {
   try {
-    const response = await fetch(`/api/vehicles/${vehicleId}`, {
+    const response = await fetch(`${vehiclesEndpoint}/${vehicleId}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error(`Vehicle deletion failed: ${response.status}`);

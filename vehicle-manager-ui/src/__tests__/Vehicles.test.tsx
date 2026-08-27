@@ -56,7 +56,7 @@ describe('Vehicles', () => {
     renderVehicles()
 
     expect(await screen.findByDisplayValue('NYC 2')).toBeInTheDocument()
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles/2')
+    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles?agencyId=2')
   })
 
   it('uses the API boundary for adding a vehicle', async () => {
@@ -66,7 +66,10 @@ describe('Vehicles', () => {
     await screen.findByDisplayValue('NYC 2')
     await user.click(screen.getByRole('button', { name: 'Add' }))
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/vehicles', expect.objectContaining({ method: 'POST' })))
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/vehicles',
+      expect.objectContaining({ method: 'POST' }),
+    ))
   })
 
   it('uses the API boundary for updating and deleting a vehicle', async () => {
@@ -80,13 +83,16 @@ describe('Vehicles', () => {
     await user.click(document.body)
 
     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
-      '/api/vehicles/vehicle-2',
+      'http://localhost:8080/api/v1/vehicles/vehicle-2',
       expect.objectContaining({ method: 'PUT' }),
     ))
 
     await user.click(screen.getByTestId('vehicle-row-vehicle-2'))
     await user.click(screen.getByRole('button', { name: /delete nyc 2/i }))
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/vehicles/vehicle-2', expect.objectContaining({ method: 'DELETE' })))
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/vehicles/vehicle-2',
+      expect.objectContaining({ method: 'DELETE' }),
+    ))
   })
 })
