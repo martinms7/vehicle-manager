@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { VehicleList } from './VehicleList'
 import type { Vehicle } from '../types/Vehicle'
-import { getVehiclesById, updateVehicle, deleteVehicleById, addVehicle } from '../hooks/api/useVehiclesApi'
+import { getVehiclesById, updateVehicle, deleteVehicleById, addVehicle as addVehicleApi } from '../hooks/api/useVehiclesApi'
 import { useQuery } from '@tanstack/react-query'
 
 // export type VehicleDto = {
@@ -116,7 +115,7 @@ export function Vehicles() {
 
   const addVehicle = async (vehicle: Vehicle) => {
     // setVehicles((currentVehicles) => [...currentVehicles, vehicle])
-    await addVehicle(vehicle);
+    await addVehicleApi(vehicle);
     refetch(); // Refetch the vehicles after adding a new one
   }
 
