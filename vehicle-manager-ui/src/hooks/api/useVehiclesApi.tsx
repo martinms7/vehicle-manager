@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react"
 import type { Vehicle } from "../../types/Vehicle"
 
 export type VehicleDto = {
@@ -30,11 +29,13 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
       type: vehicleDto.vehicleType,
       transitAgencyId: String(vehicleDto.agencyId),
       capacity: vehicleDto.seatingCapacity,
-    })
+    });
+
+    const domainAddress: string = "http://localhost:8080/api/v1/vehicles";
     
     const getMockVehicleDtos = async (agencyId: number): Promise<VehicleDto[]> => (
       mockVehicleDtos[agencyId] ?? []
-    )
+    );
     
     // const getVehicleDtos = async (agencyId: number): Promise<VehicleDto[]> => {
     //   try {
@@ -48,10 +49,12 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
 
 export async function getVehiclesById (agencyId: number): Promise<Vehicle[]> {
       try {
-        const response = await fetch(`/api/vehicles?agencyId=${agencyId}`)
+        const response = await fetch(`${domainAddress}/${agencyId}`)
         if (!response.ok) throw new Error(`Vehicle request failed: ${response.status}`)
-        return agencyId ? (await response.json() as VehicleDto[]).map(mapVehicleDto) : []; 
-      } catch {
+        const vehicleDtos = await response.json() as VehicleDto[];
+        const vehicles = agencyId ? vehicleDtos.map(mapVehicleDto) : [];
+        return vehicles;
+      } catch (error) {
         return (await getMockVehicleDtos(agencyId)).map(mapVehicleDto)
       }
 

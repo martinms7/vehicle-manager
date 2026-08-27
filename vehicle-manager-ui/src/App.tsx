@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { Vehicles } from './components/Vehicles'
 import './App.css'
-import { BrowserRouter, createBrowserRouter, createRoutesFromElements, Route, Router, RouterProvider, Routes, useSearchParams } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 // const router = createBrowserRouter(
 //   createRoutesFromElements(

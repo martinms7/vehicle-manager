@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FocusEvent } from 'react'
 import './VehicleList.css'
-import { useSearchParams } from 'react-router-dom'
 import type { Vehicle } from '../types/Vehicle'
 
 
@@ -32,7 +31,6 @@ const fields: { key: EditableField; label: string; inputMode?: 'numeric' }[] = [
 ]
 
 export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Vehicle | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -141,11 +139,12 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
       onBlur={deselectIfOutside}
     >
       <div className="vehicle-list__title-row">
-        <h1>{`${searchParams.get('id')}` === '1' ? 'NYC' : 'BOS'} Agency Vehicles</h1>
+        <h1>Your Vehicles</h1>
         <div className="vehicle-list__actions">
           <button
             type="button"
             className="vehicle-list__add"
+            data-testid="add-vehicle"
             onClick={() => void addVehicle()}
             disabled={isBusy}
           >
@@ -164,7 +163,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
       </div>
 
       <div className="vehicle-list__table-wrap">
-        <table>
+        <table data-testid="vehicle-table">
           <thead>
             <tr>
               <th scope="col"><span className="sr-only">Select</span></th>
@@ -179,6 +178,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
               return (
                 <tr
                   key={vehicle.id}
+                  data-testid={`vehicle-row-${vehicle.id}`}
                   className={isSelected ? 'is-selected' : ''}
                   onClick={() => selectRow(vehicle)}
                   aria-selected={isSelected}
@@ -192,6 +192,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
                       onClick={(event) => event.stopPropagation()}
                       disabled={isBusy}
                       aria-label={`Select ${vehicle.label}`}
+                      data-testid={`vehicle-selector-${vehicle.id}`}
                     />
                   </td>
                   {fields.map((field) => (
@@ -214,6 +215,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
                           }}
                           disabled={!isSelected || isBusy}
                           aria-label={`${field.label} for ${vehicle.label}`}
+                          data-testid={`vehicle-${vehicle.id}-${field.key}`}
                         >
                           {vehicleTypes.map((type) => <option key={type} value={type}>{type}</option>)}
                         </select>
@@ -229,6 +231,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
                           }}
                           disabled={!isSelected || isBusy}
                           aria-label={`${field.label} for ${vehicle.label}`}
+                          data-testid={`vehicle-${vehicle.id}-${field.key}`}
                         />
                       )}
                     </td>
