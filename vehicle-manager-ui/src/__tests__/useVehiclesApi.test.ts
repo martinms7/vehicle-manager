@@ -3,7 +3,7 @@ import {
   deleteVehicleById,
   getVehiclesById,
   updateVehicle,
-  vehicleToVehicleDto,
+  mapVehicleToVehicleDto,
 } from '../hooks/api/useVehiclesApi'
 import type { Vehicle } from '../types/Vehicle'
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
@@ -38,7 +38,7 @@ describe('useVehiclesApi', () => {
   })
 
   it('maps a Vehicle domain object to a VehicleDto', () => {
-    expect(vehicleToVehicleDto({
+    expect(mapVehicleToVehicleDto({
       id: 'vehicle-1',
       label: 'Route 1',
       type: 'bus',

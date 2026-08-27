@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom'
 import { VehicleList } from './VehicleList'
 import type { Vehicle } from '../types/Vehicle'
 import { getVehiclesById, updateVehicle, deleteVehicleById, addVehicle as addVehicleApi } from '../hooks/api/useVehiclesApi'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // export type VehicleDto = {
 //   vehicleId: string
@@ -101,22 +101,17 @@ export function Vehicles() {
         queryFn: () => getVehiclesById(agencyId),
         enabled: !!agencyId,
     });
-    //   const [vehicles, setVehicles] = useState<Vehicle[]>([])
-  
-    // let isCurrentRequest = true
-//    if (agencyId === null) {
-//       setVehicles([])
-//     //   return () => {
-//     //     isCurrentRequest = false
-//     //   }
-//     }else{
-//         setVehicles(initialVehicles ?? []);
-//     }
+  const queryClient = useQueryClient();
 
   const addVehicle = async (vehicle: Vehicle) => {
+    const latestVehicleList = await addVehicleApi(vehicle)
     // setVehicles((currentVehicles) => [...currentVehicles, vehicle])
-    await addVehicleApi(vehicle);
-    refetch(); // Refetch the vehicles after adding a new one
+
+    //filtering here instead of in the backend for now
+    const filteredVehicles = latestVehicleList.filter((v) => v.transitAgencyId === String(agencyId));
+    queryClient.setQueryData<Vehicle[]>(['agency', agencyId], filteredVehicles)
+    // await addVehicleApi(vehicle);
+    // await refetch(); // Refetch the vehicles after adding a new one
   }
 
   const saveVehicle = async (vehicle: Vehicle) => {
@@ -124,6 +119,10 @@ export function Vehicles() {
     // setVehicles((currentVehicles) => currentVehicles.map((currentVehicle) => (
     //   currentVehicle.id === vehicle.id ? vehicle : currentVehicle
     // )))
+    if(!vehicle.id) {
+        await addVehicle(vehicle);
+        return;
+    }
     await updateVehicle(vehicle);
     refetch(); // Refetch the vehicles after updating one
   }
@@ -140,6 +139,7 @@ export function Vehicles() {
 
   return (
     <VehicleList
+      agencyId={agencyId}
       vehicles={initialVehicles ?? []}
       onAdd={addVehicle}
       onSave={saveVehicle}
