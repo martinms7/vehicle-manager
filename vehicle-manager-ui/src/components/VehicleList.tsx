@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FocusEvent } from 'react'
 import './VehicleList.css'
+import { useSearchParams } from 'react-router-dom'
+import type { Vehicle } from '../types/Vehicle'
 
-export type Vehicle = {
-  id: string
-  label: string
-  type: string
-  transitAgencyId: string
-  capacity: number
-}
 
-type EditableField = Exclude<keyof Vehicle, 'id'>
+
+type EditableField = Exclude<keyof Vehicle, 'id'> // All fields except for the id are editable
 
 type VehicleListProps = {
   vehicles: Vehicle[]
@@ -36,6 +32,7 @@ const fields: { key: EditableField; label: string; inputMode?: 'numeric' }[] = [
 ]
 
 export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Vehicle | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -144,7 +141,7 @@ export function VehicleList({ vehicles, onAdd, onSave, onDelete }: VehicleListPr
       onBlur={deselectIfOutside}
     >
       <div className="vehicle-list__title-row">
-        <h1>Your Vehicles</h1>
+        <h1>{`${searchParams.get('id')}` === '1' ? 'NYC' : 'BOS'} Agency Vehicles</h1>
         <div className="vehicle-list__actions">
           <button
             type="button"
