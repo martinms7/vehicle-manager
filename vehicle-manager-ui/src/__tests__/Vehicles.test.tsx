@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -47,7 +48,13 @@ describe('Vehicles', () => {
       }
       return {
         ok: true,
-        json: async () => loadedVehicles[0],
+        json: async () => [{
+          vehicleId: loadedVehicles[0].id,
+          name: loadedVehicles[0].label,
+          vehicleType: loadedVehicles[0].type,
+          agencyId: Number(loadedVehicles[0].transitAgencyId),
+          seatingCapacity: loadedVehicles[0].capacity,
+        }],
       } as Response
     })
   })
@@ -55,7 +62,7 @@ describe('Vehicles', () => {
   it('loads vehicles for the agency in the URL', async () => {
     renderVehicles()
 
-    expect(await screen.findByDisplayValue('NYC 2')).toBeInTheDocument()
+    expect(await screen.findByDisplayValue('NYC 2')).toBeTruthy()
     expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/v1/vehicles?agencyId=2')
   })
 
