@@ -140,7 +140,7 @@ export function VehicleList({ agencyId, vehicles, onAdd, onSave, onDelete }: Veh
       onBlur={deselectIfOutside}
     >
       <div className="vehicle-list__title-row">
-        <h1>Your Vehicles</h1>
+        <h1>{vehicles[0]?.transitAgencyName || 'Your'} Vehicles</h1>
         <div className="vehicle-list__actions">
           <button
             type="button"

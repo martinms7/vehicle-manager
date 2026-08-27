@@ -5,21 +5,22 @@ export type VehicleDto = {
   name: string
   vehicleType: string
   agencyId: number
+  agencyName?: string
   seatingCapacity: number
 }
 
 const mockVehicleDtos: Record<number, VehicleDto[]> = {
   1: [
-    { vehicleId: 'bos-101', name: 'Boston 101', vehicleType: 'bus', agencyId: 1, seatingCapacity: 50 },
-    { vehicleId: 'bos-202', name: 'Boston 202', vehicleType: 'streetcar', agencyId: 1, seatingCapacity: 150 },
+    { vehicleId: 'bos-101', name: 'Boston 101', vehicleType: 'bus', agencyId: 1, agencyName: 'Boston', seatingCapacity: 50 },
+    { vehicleId: 'bos-202', name: 'Boston 202', vehicleType: 'streetcar', agencyId: 1, agencyName: 'Boston', seatingCapacity: 150 },
   ],
   2: [
-    { vehicleId: 'nyc-101', name: 'NYC 101', vehicleType: 'bus', agencyId: 2, seatingCapacity: 50 },
-    { vehicleId: 'nyc-202', name: 'NYC 202', vehicleType: 'train', agencyId: 2, seatingCapacity: 700 },
+    { vehicleId: 'nyc-101', name: 'NYC 101', vehicleType: 'bus', agencyId: 2, agencyName: 'NYC', seatingCapacity: 50 },
+    { vehicleId: 'nyc-202', name: 'NYC 202', vehicleType: 'train', agencyId: 2, agencyName: 'NYC', seatingCapacity: 700 },
   ],
   3: [
-    { vehicleId: 'dc-101', name: 'DC 101', vehicleType: 'ferry', agencyId: 3, seatingCapacity: 500 },
-    { vehicleId: 'dc-202', name: 'DC 202', vehicleType: 'bus', agencyId: 3, seatingCapacity: 50 },
+    { vehicleId: 'dc-101', name: 'DC 101', vehicleType: 'ferry', agencyId: 3, agencyName: 'Washington D.C.', seatingCapacity: 500 },
+    { vehicleId: 'dc-202', name: 'DC 202', vehicleType: 'bus', agencyId: 3, agencyName: 'Washington D.C.', seatingCapacity: 50 },
   ],
 }
 
@@ -28,6 +29,7 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
       label: vehicleDto.name,
       type: vehicleDto.vehicleType,
       transitAgencyId: String(vehicleDto.agencyId),
+      transitAgencyName: vehicleDto.agencyName,
       capacity: vehicleDto.seatingCapacity,
     });
 
@@ -36,6 +38,7 @@ const mockVehicleDtos: Record<number, VehicleDto[]> = {
       name: vehicle.label,
       vehicleType: vehicle.type,
       agencyId: Number(vehicle.transitAgencyId),
+      agencyName: vehicle.transitAgencyName,
       seatingCapacity: vehicle.capacity,
     });
 

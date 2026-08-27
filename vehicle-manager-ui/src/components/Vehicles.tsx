@@ -92,6 +92,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 export function Vehicles() {
   const [searchParams] = useSearchParams()
   const parsedAgencyId = Number(searchParams.get('id'))
+  // Ensure the agencyId is a valid number between 1 and 3, defaulting to 1 if not specified
+  // Quick future increment: update query param in url to match agencyId
   const agencyId = Number.isInteger(parsedAgencyId) && parsedAgencyId >= 1 && parsedAgencyId <= 3
     ? parsedAgencyId
     : 1

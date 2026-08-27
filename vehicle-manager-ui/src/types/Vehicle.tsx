@@ -3,5 +3,6 @@ export type Vehicle = {
   label: string
   type: string
   transitAgencyId: string
+  transitAgencyName?: string
   capacity: number
 }
